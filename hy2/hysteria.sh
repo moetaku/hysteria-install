@@ -329,9 +329,16 @@ EOF
         last_ip=$ip
     fi
 
+    if [ "$hy_domain" = "$remarks" ]; then
+        # 如果有设置域名，则使用域名，否则使用ip
+        serverHost=$hy_domain
+    else
+        serverHost=$last_ip
+    fi
+
     mkdir /root/hy
     cat <<EOF >/root/hy/hy-client.yaml
-server: $last_ip:$last_port
+server: $serverHost:$last_port
 
 auth: $auth_pwd
 
@@ -356,7 +363,7 @@ transport:
 EOF
     cat <<EOF >/root/hy/hy-client.json
 {
-  "server": "$last_ip:$last_port",
+  "server": "$serverHost:$last_port",
   "auth": "$auth_pwd",
   "tls": {
     "sni": "$hy_domain",
@@ -397,7 +404,7 @@ dns:
 proxies:
   - name: Hys2-$remarks
     type: hysteria2
-    server: $last_ip
+    server: $serverHost
     port: $port
     password: $auth_pwd
     sni: $hy_domain
@@ -412,9 +419,9 @@ rules:
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
 EOF
-    url="hysteria2://$auth_pwd@$last_ip:$port/?mport=$last_port&insecure=1&sni=$hy_domain#Hys2-$remarks"
+    url="hysteria2://$auth_pwd@$serverHost:$port/?mport=$last_port&insecure=1&sni=$hy_domain#Hys2-$remarks"
     echo $url >/root/hy/url.txt
-    nohopurl="hysteria2://$auth_pwd@$last_ip:$port/?insecure=1&sni=$hy_domain#Hys2-$remarks"
+    nohopurl="hysteria2://$auth_pwd@$serverHost:$port/?insecure=1&sni=$hy_domain#Hys2-$remarks"
     echo $nohopurl >/root/hy/url-nohop.txt
 
     systemctl daemon-reload
