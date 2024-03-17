@@ -70,6 +70,7 @@ inst_cert() {
             domain=$(cat /root/ca.log)
             green "检测到原有域名：$domain 的证书，正在应用"
             hy_domain=$domain
+            remarks=$domain
         else
             WARPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
             WARPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -141,6 +142,7 @@ inst_cert() {
                 yellow "3. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
                 exit 1
             fi
+            remarks=$domain
         fi
     elif [[ $certInput == 3 ]]; then
         read -p "请输入公钥文件 crt 的路径：" cert_path
@@ -150,6 +152,7 @@ inst_cert() {
         read -p "请输入证书的域名：" domain
         yellow "证书域名：$domain"
         hy_domain=$domain
+        remarks=$domain
     else
         green "将使用必应自签证书作为 Hysteria 2 的节点证书"
 
@@ -161,6 +164,7 @@ inst_cert() {
         chmod 777 /etc/hysteria/private.key
         hy_domain="www.bing.com"
         domain="www.bing.com"
+        remarks=$ip
     fi
 }
 
@@ -391,7 +395,7 @@ dns:
     - 1.1.1.1
     - 114.114.114.114
 proxies:
-  - name: Misaka-Hysteria2
+  - name: Hys2-$remarks
     type: hysteria2
     server: $last_ip
     port: $port
@@ -402,15 +406,15 @@ proxy-groups:
   - name: Proxy
     type: select
     proxies:
-      - Misaka-Hysteria2
+      - Hys2-$remarks
       
 rules:
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
 EOF
-    url="hysteria2://$auth_pwd@$last_ip:$port/?mport=$last_port&insecure=1&sni=$hy_domain#Misaka-Hysteria2"
+    url="hysteria2://$auth_pwd@$last_ip:$port/?mport=$last_port&insecure=1&sni=$hy_domain#Hys2-$remarks"
     echo $url >/root/hy/url.txt
-    nohopurl="hysteria2://$auth_pwd@$last_ip:$port/?insecure=1&sni=$hy_domain#Misaka-Hysteria2"
+    nohopurl="hysteria2://$auth_pwd@$last_ip:$port/?insecure=1&sni=$hy_domain#Hys2-$remarks"
     echo $nohopurl >/root/hy/url-nohop.txt
 
     systemctl daemon-reload
@@ -521,7 +525,7 @@ changepasswd() {
     oldpasswd=$(cat /etc/hysteria/config.yaml 2>/dev/null | sed -n 15p | awk '{print $2}')
 
     read -p "设置 Hysteria 2 密码（回车跳过为随机字符）：" passwd
-    [[ -z $passwd ]] && passwd=$(date +%s%N | md5sum | cut -c 1-8)
+    [[ -z $passwd ]] && passwd=$(head /dev/urandom | tr -dc 'a-zA-Z0-9_-' | head -c 16)
 
     sed -i "1s#$oldpasswd#$passwd#g" /etc/hysteria/config.yaml
     sed -i "1s#$oldpasswd#$passwd#g" /root/hy/hy-client.yaml
