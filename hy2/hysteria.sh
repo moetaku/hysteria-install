@@ -235,11 +235,11 @@ inst_socks() {
         read -p "输入本地代理端口(回车跳过为10808)：" socksPort
         [[ -z $socksPort ]] && socksPort=10808
 
-        read -p "设置 socks代理 用户名 （回车跳过为admin）：" socksUname
-        [[ -z $socksUname ]] && socksUname="admin"
+        read -p "设置 socks代理 用户名 （回车跳过为localuser）：" socksUname
+        [[ -z $socksUname ]] && socksUname="localuser"
 
-        read -p "设置 socks代理 密码 （回车跳过为admin）：" socksPwd
-        [[ -z $socksPwd ]] && socksPwd="admin"
+        read -p "设置 socks代理 密码 （回车跳过为p@ssword）：" socksPwd
+        [[ -z $socksPwd ]] && socksPwd="p@ssword"
 
     else
         red "不走socks代理"
