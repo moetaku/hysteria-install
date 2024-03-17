@@ -278,6 +278,7 @@ insthysteria() {
     inst_cert
     inst_port
     inst_pwd
+    inst_socks
     inst_site
 
     # 设置 Hysteria 配置文件
@@ -407,7 +408,7 @@ rules:
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
 EOF
-    url="hysteria2://$auth_pwd@$last_ip:$last_port/?insecure=1&sni=$hy_domain#Misaka-Hysteria2"
+    url="hysteria2://$auth_pwd@$last_ip:$port/?mport=$last_port&insecure=1&sni=$hy_domain#Misaka-Hysteria2"
     echo $url >/root/hy/url.txt
     nohopurl="hysteria2://$auth_pwd@$last_ip:$port/?insecure=1&sni=$hy_domain#Misaka-Hysteria2"
     echo $nohopurl >/root/hy/url-nohop.txt
@@ -603,12 +604,12 @@ update_core() {
 menu() {
     clear
     echo "#############################################################"
-    echo -e "#                  ${RED}Hysteria 2 一键安装脚本-萌宅定制修改版${PLAIN}                  #"
-    echo -e "# ${GREEN}原作者${PLAIN}: MisakaNo                                  #"
-    echo -e "# ${GREEN}原作者博客${PLAIN}: https://blog.misaka.rest                            #"
-    echo -e "# ${GREEN}原GitHub 项目${PLAIN}: https://github.com/Misaka-blog               #"
-    echo -e "# ${GREEN}原GitLab 项目${PLAIN}: https://gitlab.com/Misaka-blog               #"
-    echo -e "# ${GREEN}GitHub 项目${PLAIN}: https://github.com/moetaku/hysteria-install              #"
+    echo -e "#                  ${RED}Hysteria 2 一键安装脚本-萌宅修改版${PLAIN}          #"
+    echo -e "# ${GREEN}原作者${PLAIN}: MisakaNo                                          #"
+    echo -e "# ${GREEN}原作者博客${PLAIN}: https://blog.misaka.rest                       #"
+    echo -e "# ${GREEN}原GitHub 项目${PLAIN}: https://github.com/Misaka-blog              #"
+    echo -e "# ${GREEN}原GitLab 项目${PLAIN}: https://gitlab.com/Misaka-blog              #"
+    echo -e "# ${GREEN}GitHub 项目${PLAIN}: https://github.com/moetaku/hysteria-install   #"
     echo "#############################################################"
     echo ""
     echo -e " ${GREEN}1.${PLAIN} 安装 Hysteria 2"
